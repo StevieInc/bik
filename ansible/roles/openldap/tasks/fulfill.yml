@@ -1,0 +1,33 @@
+---
+- name: OpenLDAP | Create users
+  community.general.ldap_entry:
+    server_uri: "{{ openldap_server_uri }}"
+    bind_dn: "{{ openldap_basedn }}"
+    bind_pw: "{{ openldap_bind_pw }}"
+    dn: "uid={{ item.uid }},ou=humanbeings,{{ openldap_basedn }}"
+    objectClass:
+      - person
+      - organizationalPerson
+      - inetOrgPerson
+      - top
+    attributes:
+      cn: "{{ item.cn }}"
+      givenname: "{{ item.givenname }}"
+      sn: "{{ item.sn }}"
+      uid: "{{ item.uid }}"
+      mail: "{{ item.mail }}"
+      userpassword: "{{ item.userpassword }}"
+  loop: "{{ openldap_users }}"
+
+- name: OpenLDAP | Create groups
+  community.general.ldap_entry:
+    server_uri: "{{ openldap_server_uri }}"
+    bind_dn: "{{ openldap_basedn }}"
+    bind_pw: "{{ openldap_bind_pw }}"
+    dn: "cn={{ item.name }},ou=groups,{{ openldap_basedn }}"
+    objectClass:
+      - groupOfUniqueNames
+      - top
+    attributes:
+      uniqueMember: "uid=dummy,ou=humanbeings,{{ openldap_basedn }}"
+  loop: "{{ openldap_groups }}"

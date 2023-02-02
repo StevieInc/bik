@@ -1,0 +1,58 @@
+---
+- name: OpenLDAP | Install apt pkgs
+  ansible.builtin.apt:
+    name: "{{ openldap_apt_pkgs }}"
+    state: present
+    update_cache: true
+
+- name: OpenLDAP | Install pip pkgs
+  ansible.builtin.pip:
+    name: "{{ openldap_pip_pkgs }}"
+    state: present
+
+# necessary evil
+- name: OpenLDAP | Register encripted password
+  ansible.builtin.command: slappasswd -s "{{ openldap_bind_pw }}"
+  register: openldap_encripted_password
+
+- name: OpenLDAP } Copy db template
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/db.ldif"
+    dest: /tmp
+
+# once again
+- name: OpenLDAP | Load db template into ldap
+  ansible.builtin.command: ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/db.ldif
+
+- name: OpenLDAP | Load some schemas
+  ansible.builtin.command: "ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/{{ item }}"
+  register: ldap_result_code
+  failed_when: ldap_result_code.rc not in [0,80]
+  changed_when: ldap_result_code.rc not in [0,80]
+  with_items:
+    - cosine.ldif
+    - nis.ldif
+    - inetorgperson.ldif
+
+- name: OpenLDAP | Root entry for organization
+  community.general.ldap_entry:
+    server_uri: "{{ openldap_server_uri }}"
+    bind_dn: "{{ openldap_basedn }}"
+    bind_pw: "{{ openldap_bind_pw }}"
+    dn: "{{ openldap_basedn }}"
+    objectClass:
+      - top
+      - domain
+
+- name: OpenLDAP | Root entry for users/groups
+  community.general.ldap_entry:
+    server_uri: "{{ openldap_server_uri }}"
+    bind_dn: "{{ openldap_basedn }}"
+    bind_pw: "{{ openldap_bind_pw }}"
+    dn: "ou={{ item }},{{ openldap_basedn }}"
+    objectClass:
+      - organizationalUnit
+      - top
+  loop:
+    - groups
+    - humanbeings

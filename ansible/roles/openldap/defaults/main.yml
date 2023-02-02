@@ -1,0 +1,37 @@
+---
+openldap_apt_pkgs: 
+  - slapd
+  - ldap-utils
+  - libsasl2-dev
+  - libldap2-dev
+  - python3-pip
+
+openldap_pip_pkgs:
+  - python-ldap
+
+openldap_ui_pkgs:
+  - apache2 
+  - php 
+  - php-cgi
+  - libapache2-mod-php
+  - php-mbstring
+  - php-common
+  - php-pear
+
+openldap_dbtype:     "{1}mdb"
+openldap_basedn:     dc=ru-central1,dc=internal
+openldap_server_uri: ldap://localhost:389
+openldap_bind_pw:    top_secret323
+openldap_i_want_ui: false
+
+openldap_users:
+  - { cn: "Alice A",     givenname: "alice", sn: "A",   uid: 1, mail: "1@bik.ru", userpassword: "test123"}
+  - { cn: "Bob B",       givenname: "bob",   sn: "B",   uid: 2, mail: "2@bik.ru", userpassword: "test123"}
+
+openldap_groups:
+  - name: devs
+    # members:
+    #   - alice
+  - name: ops
+
+

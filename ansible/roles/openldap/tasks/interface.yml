@@ -1,0 +1,20 @@
+---
+- name: OpenLDAP | Install pkgs for UI
+  ansible.builtin.apt:
+    name: "{{ openldap_ui_pkgs }}"
+    state: present
+    update_cache: true
+
+- name: OpenLDAP | Enable php-cgi 
+  community.general.apache2_module:
+    state: present
+    name: cgi
+  notify:
+    - restart-apache
+
+- name: OpenLDAP | Install Account manager
+  ansible.builtin.apt:
+    name: ldap-account-manager
+    state: present 
+  notify: 
+    - restart-apache

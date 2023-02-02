@@ -1,0 +1,11 @@
+---
+
+- name: Install required packages
+  import_tasks: install.yml
+
+- name: Add users and groups
+  import_tasks: fulfill.yml
+
+- name: Install web interface (if needed)
+  import_tasks: interface.yml
+  when: openldap_i_want_ui 
