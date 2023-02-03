@@ -22,7 +22,7 @@ openldap_dbtype:     "{1}mdb"
 openldap_basedn:     dc=ru-central1,dc=internal
 openldap_server_uri: ldap://localhost:389
 openldap_bind_pw:    top_secret323
-openldap_i_want_ui: false
+openldap_i_want_ui: true
 
 openldap_users:
   - { cn: "Alice A",     givenname: "alice", sn: "A",   uid: 1, mail: "1@bik.ru", userpassword: "test123"}

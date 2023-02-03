@@ -24,16 +24,6 @@
 - name: OpenLDAP | Load db template into ldap
   ansible.builtin.command: ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/db.ldif
 
-- name: OpenLDAP | Load some schemas
-  ansible.builtin.command: "ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/{{ item }}"
-  register: ldap_result_code
-  failed_when: ldap_result_code.rc not in [0,80]
-  changed_when: ldap_result_code.rc not in [0,80]
-  with_items:
-    - cosine.ldif
-    - nis.ldif
-    - inetorgperson.ldif
-
 - name: OpenLDAP | Root entry for organization
   community.general.ldap_entry:
     server_uri: "{{ openldap_server_uri }}"
